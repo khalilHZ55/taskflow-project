@@ -1,10 +1,10 @@
 :root {
   /* Colores */
   --color-bg: #f5f7fb;
-  --color-card: #e9b2b2;
+  --color-card: #e0e0e0;
   --color-primary: #f18508;
   --color-text: #1f2937;
-  --color-border: #3c78f1;
+  --color-border: #f1a33c;
 
   /* Prioridades */
   --high: #ef4444;
