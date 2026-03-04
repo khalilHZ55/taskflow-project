@@ -28,14 +28,22 @@
 
   <!-- formulario -->
   <form id="task-form">
-    <input
-      type="text"
-      id="task-input"
-      placeholder="Nueva tarea..."
-      required
-    />
-    <button type="submit">Añadir</button>
-  </form>
+  <input
+    type="text"
+    id="task-input"
+    placeholder="Nueva tarea..."
+    required
+  />
+
+  <select id="priority-filter">
+  <option value="todas">Todas</option>
+  <option value="alta">Alta</option>
+  <option value="media">Media</option>
+  <option value="baja">Baja</option>
+</select>
+
+  <button type="submit">Añadir</button>
+</form>
 
   <!-- buscador  -->
   <input
@@ -45,6 +53,7 @@
   />
 
   <!-- contenedor de tareas -->
+   <p id="task-counter">0 tareas</p>
   <div id="task-list"></div>
 </section>
     </main>

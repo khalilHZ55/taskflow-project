@@ -134,3 +134,26 @@ body {
   padding: 8px;
   margin-bottom: 16px;
 }
+
+/* tarea completada */
+.task-card.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+/* animación borrar */
+.task-card.removing {
+  transform: translateX(40px);
+  opacity: 0;
+}
+
+/* checkbox */
+.task-check {
+  cursor: pointer;
+}
+
+/* contador */
+#task-counter {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
