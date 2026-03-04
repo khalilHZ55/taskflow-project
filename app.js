@@ -6,6 +6,9 @@ const taskList = document.getElementById("task-list");
 const searchInput = document.getElementById("search-input");
 const priorityFilter = document.getElementById("priority-filter");
 const counter = document.getElementById("task-counter");
+const filterCompletedBtn = document.getElementById("filter-completed");
+const statusFilter = document.getElementById("status-filter");
+
 
 // ===== estado =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -97,7 +100,7 @@ function createTaskElement(task, index) {
   return article;
 }
 
-// ===== render =====
+
 function renderTasks() {
   const textFilter = searchInput.value || "";
   const prioFilter = priorityFilter?.value || "todas";
@@ -106,23 +109,29 @@ function renderTasks() {
 
   sortTasks();
 
-  tasks.forEach((task, index) => {
-    const matchText = task.text
-      .toLowerCase()
-      .includes(textFilter.toLowerCase());
+tasks.forEach((task, index) => {
+  const matchText = task.text
+    .toLowerCase()
+    .includes(textFilter.toLowerCase());
 
-    const matchPriority =
-      prioFilter === "todas" || task.priority === prioFilter;
+  const matchPriority =
+    prioFilter === "todas" || task.priority === prioFilter;
 
-    if (!matchText || !matchPriority) return;
+  
+  const matchStatus =
+    statusFilter.value === "todas" ||
+    (statusFilter.value === "completadas" && task.completed) ||
+    (statusFilter.value === "pendientes" && !task.completed);
 
-    taskList.appendChild(createTaskElement(task, index));
-  });
+  if (!matchText || !matchPriority || !matchStatus) return;
+
+  taskList.appendChild(createTaskElement(task, index));
+});
 
   updateCounter();
 }
 
-// ===== añadir tarea =====
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -143,7 +152,12 @@ form.addEventListener("submit", (e) => {
 // ===== filtros =====
 searchInput.addEventListener("input", renderTasks);
 priorityFilter?.addEventListener("change", renderTasks);
-
+statusFilter?.addEventListener("change", renderTasks);
 // ===== init =====
 renderTasks();
 updateCounter();
+
+filterCompletedBtn?.addEventListener("click", () => {
+  showCompletedOnly = !showCompletedOnly;
+  renderTasks();
+});

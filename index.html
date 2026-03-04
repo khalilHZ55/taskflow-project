@@ -13,14 +13,23 @@
   </header>
 
   <div class="layout">
-    <aside class="sidebar">
-      <h2>Filtros</h2>
-      <ul>
-        <li>Todas</li>
-        <li>Alta prioridad</li>
-        <li>Completadas</li>
-      </ul>
-    </aside>
+   <aside class="sidebar">
+  <h2>Filtros</h2>
+
+  <select id="priority-filter">
+    <option value="todas">Todas</option>
+    <option value="alta">Alta prioridad</option>
+    <option value="media">Media prioridad</option>
+    <option value="baja">Baja prioridad</option>
+  </select>
+
+  <select id="status-filter">
+  <option value="todas">Todas</option>
+  <option value="completadas">Completadas</option>
+  <option value="pendientes">Pendientes</option>
+</select>
+  
+</aside>
 
     <main class="main">
       <section class="tasks">
@@ -35,10 +44,9 @@
     required
   />
 
-  <select id="priority-filter">
-  <option value="todas">Todas</option>
+<select id="priority-input">
   <option value="alta">Alta</option>
-  <option value="media">Media</option>
+  <option value="media" selected>Media</option>
   <option value="baja">Baja</option>
 </select>
 
