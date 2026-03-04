@@ -24,28 +24,31 @@
 
     <main class="main">
       <section class="tasks">
-        <h2>Mis tareas</h2>
+  <h2>Mis tareas</h2>
 
-        <article class="task-card">
-          <span class="task-title">Diseñar wireframes</span>
-          <span class="task-category">UX</span>
-          <span class="badge high">Alta</span>
-        </article>
+  <!-- formulario -->
+  <form id="task-form">
+    <input
+      type="text"
+      id="task-input"
+      placeholder="Nueva tarea..."
+      required
+    />
+    <button type="submit">Añadir</button>
+  </form>
 
-        <article class="task-card">
-          <span class="task-title">Implementar login</span>
-          <span class="task-category">Frontend</span>
-          <span class="badge medium">Media</span>
-        </article>
+  <!-- buscador  -->
+  <input
+    type="text"
+    id="search-input"
+    placeholder="Buscar tareas..."
+  />
 
-        <article class="task-card">
-          <span class="task-title">Deploy en producción</span>
-          <span class="task-category">DevOps</span>
-          <span class="badge low">Baja</span>
-        </article>
-
-      </section>
+  <!-- contenedor de tareas -->
+  <div id="task-list"></div>
+</section>
     </main>
   </div>
+  <script src="app.js"></script>
 </body>
 </html>
