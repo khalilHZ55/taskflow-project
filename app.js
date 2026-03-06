@@ -106,9 +106,7 @@ function renderTasks() {
   sortTasks();
 
 tasks.forEach((task, index) => {
-  const matchText = task.text
-    .toLowerCase()
-    .includes(textFilter.toLowerCase());
+  const matchText = (task.text || "").toLowerCase().includes(textFilter.toLowerCase());
 
   const matchPriority =
     prioFilter === "todas" || task.priority === prioFilter;
