@@ -30,7 +30,7 @@ function getBadgeClass(priority) {
   return "badge low";
 }
 
-// ===== ordenar por prioridad =====
+
 function sortTasks() {
   const order = { alta: 0, media: 1, baja: 2 };
   tasks.sort((a, b) => order[a.priority] - order[b.priority]);
@@ -38,7 +38,7 @@ function sortTasks() {
 
 function createTaskElement(task, index) {
   const article = document.createElement("article");
-  // Estilo de tarjeta grande y responsiva
+  
   article.className = "task-card p-6 mb-4 flex items-center gap-6 bg-white dark:bg-zinc-800 rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700";
   
   if (task.completed) article.classList.add("opacity-50");
@@ -57,11 +57,11 @@ function createTaskElement(task, index) {
   title.className = `task-title font-bold flex-1 text-2xl dark:text-orange-700 ${task.completed ? 'line-through' : ''}`;
   title.textContent = task.text;
 
-  // --- LÓGICA DE COLORES PARA LA PRIORIDAD ---
+  
   const badge = document.createElement("span");
   let priorityClasses = "";
 
-  // Asignamos colores de fondo según la prioridad
+  
   switch (task.priority) {
     case "alta":
       priorityClasses = "bg-red-500 text-white shadow-red-200";
@@ -76,7 +76,7 @@ function createTaskElement(task, index) {
       priorityClasses = "bg-zinc-500 text-white";
   }
 
-  // Aplicamos las clases al badge (sin el <select>)
+  
   badge.className = `${priorityClasses} px-4 py-1 rounded-full text-sm font-black uppercase tracking-wider shadow-sm`;
   badge.textContent = task.priority;
 
@@ -92,7 +92,7 @@ function createTaskElement(task, index) {
     }, 200);
   });
 
-  // Ya no incluimos el 'select', solo el 'badge' que es estático
+  
   article.append(checkbox, title, badge, deleteBtn);
   return article;
 }
