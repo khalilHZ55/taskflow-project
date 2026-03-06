@@ -4,64 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Taskflow Project</title>
-  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+tailwind.config = {
+  darkMode: 'class'
+}
+</script>
 </head>
 
-<body>
-  <header class="header">
+<body class="text-black dark:text-dark transition-colors ">
+  <header class="bg-orange-500 text-white p-4 flex justify-between items-center dark:bg-orange-700 transition-colors ">
     <h1>Taskflow</h1>
   </header>
 
-  <div class="layout">
-   <aside class="sidebar">
-  <h2>Filtros</h2>
+  <div class="flex min-h-screen">
 
-  <select id="priority-filter">
-    <option value="todas">Todas</option>
-    <option value="alta">Alta prioridad</option>
-    <option value="media">Media prioridad</option>
-    <option value="baja">Baja prioridad</option>
-  </select>
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-zinc-100 p-6 border-r border-zinc-100
+  dark:bg-zinc-800 dark:border-zinc-700">
 
-  <select id="status-filter">
-  <option value="todas">Todas</option>
-  <option value="completadas">Completadas</option>
-  <option value="pendientes">Pendientes</option>
-</select>
-  
-</aside>
+      <!-- botón modo oscuro -->
+    <button id="dark-toggle"
+    class="mb-4 px-4 py-2 rounded text-white transition
+    bg-orange-500 hover:bg-orange-700
+    dark:bg-orange-700 dark:hover:bg-orange-500">
+      ☀️
+    </button>
 
-    <main class="main">
-      <section class="tasks">
-  <h2>Mis tareas</h2>
+    <h2 class="text-4xl font-black mb-6 dark:text-orange-700">
+  Filtros
+</h2>
+    
+    <select id="priority-filter"
+    class="w-full p-2 rounded border border-zinc-300
+    bg-white text-zinc-700
+    dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
+      <option value="todas">Todas</option>
+      <option value="alta">Alta prioridad</option>
+      <option value="media">Media prioridad</option>
+      <option value="baja">Baja prioridad</option>
+    </select>
 
+    <select id="status-filter"
+    class="w-full mt-3 p-2 rounded border border-zinc-300
+    bg-white text-zinc-700
+    dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
+      <option value="todas">Todas</option>
+      <option value="completadas">Completadas</option>
+      <option value="pendientes">Pendientes</option>
+    </select>
+
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="flex-1 p-6 bg-gradient-to-br from-white via-orange-50 to-zinc-200 dark:from-zinc-900 dark:via-zinc-800 dark:to-black
+">
+
+    <section>
+      <h2 class="text-4xl font-black mb-6 dark:text-orange-700">
+  Mis tareas
+</h2>
   <!-- formulario -->
   <form id="task-form">
-  <input
-    type="text"
-    id="task-input"
-    placeholder="Nueva tarea..."
-    required
-  />
+<input
+type="text"
+id="task-input"
+placeholder="Nueva tarea..."
+required
+class="p-2 border rounded
+bg-white text-zinc-800 border-zinc-300
 
-<select id="priority-input">
+dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600"
+/>
+
+<select id="priority-input"
+class="p-2 border rounded
+bg-white text-zinc-800 border-zinc-300
+
+dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
+
   <option value="alta">Alta</option>
   <option value="media" selected>Media</option>
   <option value="baja">Baja</option>
 </select>
 
-  <button type="submit">Añadir</button>
+  <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-bold transition-colors dark:bg-orange-700 dark:hover:bg-orange-500">
+  Añadir
+</button>
 </form>
 
   <!-- buscador  -->
   <input
-    type="text"
-    id="search-input"
-    placeholder="Buscar tareas..."
-  />
+type="text"
+id="search-input"
+placeholder="Buscar tareas..."
+class="w-full mt-4 p-2 border rounded
+
+bg-white text-zinc-800 border-zinc-300
+
+dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600"
+/>
 
   <!-- contenedor de tareas -->
-   <p id="task-counter">0 tareas</p>
+   <p id="task-counter" class="text-4xl font-black mb-6 dark:text-orange-700
+  ">
+  0 tareas
+</p>
   <div id="task-list"></div>
 </section>
     </main>
@@ -69,3 +117,10 @@
   <script src="app.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
