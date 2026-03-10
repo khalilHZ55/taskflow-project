@@ -12,16 +12,20 @@ tailwind.config = {
 </script>
 </head>
 
-<body class="text-black dark:text-dark transition-colors ">
+<body class="min-h-screen bg-white text-black
+dark:bg-zinc-900 dark:text-zinc-200
+transition-colors duration-300">
+  
   <header class="bg-orange-500 text-white p-4 flex justify-between items-center dark:bg-orange-700 transition-colors ">
     <h1>Taskflow</h1>
   </header>
 
-  <div class="flex min-h-screen">
+  <div class="flex flex-col md:flex-row min-h-screen">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-zinc-100 p-6 border-r border-zinc-100
-  dark:bg-zinc-800 dark:border-zinc-700">
+  <aside class="w-full md:w-64 p-6
+bg-zinc-100 border-b md:border-b-0 md:border-r border-zinc-300
+dark:bg-zinc-800 dark:border-zinc-700">
 
       <!-- botón modo oscuro -->
     <button id="dark-toggle"
@@ -92,6 +96,22 @@ dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
   Añadir
 </button>
 </form>
+
+<div class="flex gap-3 mt-3">
+
+<button id="complete-all"
+class="px-3 py-2 text-white rounded transition
+bg-green-500 hover:bg-green-700">
+Completar todas
+</button>
+
+<button id="clear-completed"
+class="px-3 py-2 text-white rounded transition
+bg-red-500 hover:bg-red-700">
+Borrar completadas
+</button>
+
+</div>
 
   <!-- buscador  -->
   <input

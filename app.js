@@ -7,7 +7,8 @@ const searchInput = document.getElementById("search-input");
 const priorityFilter = document.getElementById("priority-filter");
 const counter = document.getElementById("task-counter");
 const statusFilter = document.getElementById("status-filter");
-
+const completeAllBtn = document.getElementById("complete-all");
+const clearCompletedBtn = document.getElementById("clear-completed");
 
 // ===== estado =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -37,16 +38,19 @@ function sortTasks() {
 }
 
 function createTaskElement(task, index) {
+
   const article = document.createElement("article");
-  
-  article.className = "task-card p-6 mb-4 flex items-center gap-6 bg-white dark:bg-zinc-800 rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700";
-  
+
+  article.className =
+  "p-4 mb-4 flex items-center gap-4 bg-white dark:bg-zinc-800 rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700";
+
   if (task.completed) article.classList.add("opacity-50");
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.className = "w-6 h-6 cursor-pointer";
+  checkbox.className = "w-5 h-5 cursor-pointer";
   checkbox.checked = task.completed;
+
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
     saveTasks();
@@ -54,46 +58,54 @@ function createTaskElement(task, index) {
   });
 
   const title = document.createElement("span");
-  title.className = `task-title font-bold flex-1 text-2xl dark:text-orange-700 ${task.completed ? 'line-through' : ''}`;
+
+  title.className =
+  `flex-1 font-bold text-xl break-all ${task.completed ? "line-through" : ""}`;
+
   title.textContent = task.text;
 
-  
+
   const badge = document.createElement("span");
+
   let priorityClasses = "";
 
-  
   switch (task.priority) {
+
     case "alta":
-      priorityClasses = "bg-red-500 text-white shadow-red-200";
+      priorityClasses = "bg-red-500 text-white";
       break;
+
     case "media":
-      priorityClasses = "bg-yellow-500 text-white shadow-yellow-200";
+      priorityClasses = "bg-yellow-500 text-white";
       break;
+
     case "baja":
-      priorityClasses = "bg-green-500 text-white shadow-green-200";
+      priorityClasses = "bg-green-500 text-white";
       break;
-    default:
-      priorityClasses = "bg-zinc-500 text-white";
   }
 
-  
-  badge.className = `${priorityClasses} px-4 py-1 rounded-full text-sm font-black uppercase tracking-wider shadow-sm`;
+  badge.className =
+  `${priorityClasses} px-3 py-1 rounded-full text-xs font-bold`;
+
   badge.textContent = task.priority;
 
+
   const deleteBtn = document.createElement("button");
+
   deleteBtn.textContent = "🗑";
-  deleteBtn.className = "text-3xl hover:scale-110 transition-transform active:scale-90";
+  deleteBtn.className = "text-xl hover:scale-110 transition";
+
   deleteBtn.addEventListener("click", () => {
-    article.classList.add("opacity-0", "scale-95");
-    setTimeout(() => {
-      tasks.splice(index, 1);
-      saveTasks();
-      renderTasks();
-    }, 200);
+
+    tasks.splice(index, 1);
+
+    saveTasks();
+    renderTasks();
+
   });
 
-  
   article.append(checkbox, title, badge, deleteBtn);
+
   return article;
 }
 
@@ -171,4 +183,24 @@ toggleBtn.addEventListener("click", () => {
     toggleBtn.textContent = "☀️";
     localStorage.setItem("theme", "light");
   }
+});
+
+
+//Completar todas
+completeAllBtn.addEventListener("click", () => {
+  tasks.forEach(task => {
+    task.completed = true;
+  });
+
+  saveTasks();
+  renderTasks();
+});
+
+//Borrar completadas
+
+clearCompletedBtn.addEventListener("click", () => {
+  tasks = tasks.filter(task => !task.completed);
+
+  saveTasks();
+  renderTasks();
 });
