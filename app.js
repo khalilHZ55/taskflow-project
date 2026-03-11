@@ -9,6 +9,9 @@ const counter = document.getElementById("task-counter");
 const statusFilter = document.getElementById("status-filter");
 const completeAllBtn = document.getElementById("complete-all");
 const clearCompletedBtn = document.getElementById("clear-completed");
+const statTotal = document.getElementById("stat-total");
+const statCompleted = document.getElementById("stat-completed");
+const statPending = document.getElementById("stat-pending");
 
 // ===== estado =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -22,6 +25,18 @@ function saveTasks() {
 function updateCounter() {
   const pending = tasks.filter(t => !t.completed).length;
   counter.textContent = `${pending} tareas pendientes`;
+}
+
+function updateStats() {
+
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  const pending = total - completed;
+
+  statTotal.textContent = total;
+  statCompleted.textContent = completed;
+  statPending.textContent = pending;
+
 }
 
 // ===== badge =====
@@ -46,17 +61,23 @@ function createTaskElement(task, index) {
 
   if (task.completed) article.classList.add("opacity-50");
 
+  // checkbox
   const checkbox = document.createElement("input");
+
   checkbox.type = "checkbox";
   checkbox.className = "w-5 h-5 cursor-pointer";
   checkbox.checked = task.completed;
 
   checkbox.addEventListener("change", () => {
+
     task.completed = checkbox.checked;
+
     saveTasks();
     renderTasks();
+
   });
 
+  // titulo
   const title = document.createElement("span");
 
   title.className =
@@ -64,7 +85,7 @@ function createTaskElement(task, index) {
 
   title.textContent = task.text;
 
-
+  // prioridad
   const badge = document.createElement("span");
 
   let priorityClasses = "";
@@ -82,6 +103,7 @@ function createTaskElement(task, index) {
     case "baja":
       priorityClasses = "bg-green-500 text-white";
       break;
+
   }
 
   badge.className =
@@ -89,11 +111,54 @@ function createTaskElement(task, index) {
 
   badge.textContent = task.priority;
 
+  // botón editar
+  const editBtn = document.createElement("button");
 
+  editBtn.textContent = "✏️";
+
+  editBtn.className =
+  "text-xl hover:scale-110 transition";
+
+  editBtn.addEventListener("click", () => {
+
+    const inputEdit = document.createElement("input");
+
+    inputEdit.type = "text";
+    inputEdit.value = task.text;
+
+    inputEdit.className =
+    "flex-1 p-1 border rounded bg-white dark:bg-zinc-700";
+
+    title.replaceWith(inputEdit);
+
+    inputEdit.focus();
+
+    inputEdit.addEventListener("blur", saveEdit);
+
+    inputEdit.addEventListener("keydown", (e) => {
+
+      if (e.key === "Enter") saveEdit();
+
+    });
+
+    function saveEdit() {
+
+      task.text = inputEdit.value.trim() || task.text;
+
+      saveTasks();
+      renderTasks();
+
+    }
+
+  });
+
+  // botón borrar
   const deleteBtn = document.createElement("button");
 
   deleteBtn.textContent = "🗑";
-  deleteBtn.className = "text-xl hover:scale-110 transition";
+
+  deleteBtn.className =
+  "text-xl hover:scale-110 transition";
 
   deleteBtn.addEventListener("click", () => {
 
@@ -104,7 +169,13 @@ function createTaskElement(task, index) {
 
   });
 
-  article.append(checkbox, title, badge, deleteBtn);
+  article.append(
+    checkbox,
+    title,
+    badge,
+    editBtn,
+    deleteBtn
+  );
 
   return article;
 }
@@ -135,6 +206,8 @@ tasks.forEach((task, index) => {
 });
 
   updateCounter();
+updateStats();
+  
 }
 
 
