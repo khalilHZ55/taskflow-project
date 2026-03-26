@@ -3,151 +3,230 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Taskflow Project</title>
+  <title>Project Mars</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-tailwind.config = {
-  darkMode: 'class'
-}
-</script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            exo: ['Exo 2', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
 </head>
 
-<body class="min-h-screen bg-white text-black
-dark:bg-zinc-900 dark:text-zinc-200
-transition-colors duration-300">
-  
-  <header class="bg-orange-500 text-white p-4 flex justify-between items-center dark:bg-orange-700 transition-colors ">
-    <h1>Taskflow</h1>
+<body class="min-h-screen bg-orange-200 text-black dark:bg-zinc-900 dark:text-zinc-200 font-exo">
+
+  <!-- HEADER -->
+  <header class="bg-orange-500 dark:bg-orange-700 text-white p-5 flex justify-between items-center transition-colors duration-700">
+    <h1 class="font-orbitron text-4xl">Project Mars</h1>
   </header>
 
   <div class="flex flex-col md:flex-row min-h-screen">
 
-  <!-- SIDEBAR -->
-  <aside class="w-full md:w-64 p-6
-bg-zinc-100 border-b md:border-b-0 md:border-r border-zinc-300
-dark:bg-zinc-800 dark:border-zinc-700">
+    <!-- SIDEBAR -->
+    <aside class="w-full md:w-64 p-6 bg-orange-100 dark:bg-zinc-800 border-b md:border-b-0 md:border-r border-zinc-300 dark:border-zinc-700 transition-colors duration-700">
 
-      <!-- botón modo oscuro -->
-    <button id="dark-toggle"
-    class="mb-4 px-4 py-2 rounded text-white transition
-    bg-orange-500 hover:bg-orange-700
-    dark:bg-orange-700 dark:hover:bg-orange-500">
-      ☀️
-    </button>
+      <button id="dark-toggle"
+        class="mb-4 px-4 py-2 rounded text-white bg-orange-500 hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-500 transition-colors duration-700">
+        ☀️
+      </button>
 
-    <h2 class="text-4xl font-black mb-6 dark:text-orange-700">
-  Filtros
-</h2>
-    
-    <select id="priority-filter"
-    class="w-full p-2 rounded border border-zinc-300
-    bg-white text-zinc-700
-    dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
-      <option value="todas">Todas</option>
-      <option value="alta">Alta prioridad</option>
-      <option value="media">Media prioridad</option>
-      <option value="baja">Baja prioridad</option>
-    </select>
+      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">
+        Filtros
+      </h2>
 
-    <select id="status-filter"
-    class="w-full mt-3 p-2 rounded border border-zinc-300
-    bg-white text-zinc-700
-    dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
-      <option value="todas">Todas</option>
-      <option value="completadas">Completadas</option>
-      <option value="pendientes">Pendientes</option>
-    </select>
+      <select id="priority-filter" class="select-base w-full">
+        <option value="todas">Todas las prioridades</option>
+        <option value="alta">Alta prioridad</option>
+        <option value="media">Media prioridad</option>
+        <option value="baja">Baja prioridad</option>
+      </select>
 
-    <h2 class="text-3xl font-black mt-10 mb-4 dark:text-orange-700">
-Estadísticas
-</h2>
+      <select id="status-filter" class="select-base w-full mt-3">
+        <option value="todas">Todos los estados</option>
+        <option value="pendientes">Pendientes</option>
+        <option value="completadas">Completadas</option>
+        <option value="vencidas">Vencidas</option>
+      </select>
 
-<div class="space-y-2 text-lg">
+      <select id="location-filter" class="select-base w-full mt-3">
+        <option value="todas">Todas las ubicaciones</option>
+        <option value="interior">Interior</option>
+        <option value="exterior">Exterior</option>
+      </select>
 
-<p>Total: <span id="stat-total">0</span></p>
+      <h2 class="font-orbitron text-3xl font-black mt-10 mb-4 dark:text-orange-700 transition-colors duration-700">
+        Estadísticas
+      </h2>
 
-<p>Completadas: <span id="stat-completed">0</span></p>
+      <div class="space-y-2 text-lg">
+        <p>Total: <span id="stat-total" class="font-bold">0</span></p>
+        <p>Completadas: <span id="stat-completed" class="font-bold text-green-500">0</span></p>
+        <p>Pendientes: <span id="stat-pending" class="font-bold text-orange-500">0</span></p>
+        <p>Vencidas: <span id="stat-expired" class="font-bold text-red-500">0</span></p>
+      </div>
 
-<p>Pendientes: <span id="stat-pending">0</span></p>
+    </aside>
 
-</div>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-6 bg-orange-300 dark:bg-zinc-900 transition-colors duration-700">
 
-  </aside>
+      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">
+        Mis tareas
+      </h2>
 
-  <!-- CONTENIDO -->
-  <main class="flex-1 p-6 bg-gradient-to-br from-white via-orange-50 to-zinc-200 dark:from-zinc-900 dark:via-zinc-800 dark:to-black
-">
+      <!-- FORMULARIO -->
+      <form id="task-form" class="flex flex-wrap gap-2 items-center">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Nueva tarea..."
+          required
+          class="input-base flex-1 min-w-[200px]"
+        />
 
-    <section>
-      <h2 class="text-4xl font-black mb-6 dark:text-orange-700">
-  Mis tareas
-</h2>
-  <!-- formulario -->
-  <form id="task-form">
-<input
-type="text"
-id="task-input"
-placeholder="Nueva tarea..."
-required
-class="p-2 border rounded
-bg-white text-zinc-800 border-zinc-300
+        <select id="priority-input" class="select-base">
+          <option value="alta">Alta</option>
+          <option value="media" selected>Media</option>
+          <option value="baja">Baja</option>
+        </select>
 
-dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600"
-/>
+        <select id="location-input" class="select-base">
+          <option value="interior">Interior</option>
+          <option value="exterior">Exterior</option>
+        </select>
 
-<select id="priority-input"
-class="p-2 border rounded
-bg-white text-zinc-800 border-zinc-300
+        <select id="deadline-type" class="select-base">
+          <option value="tomorrow">Mañana</option>
+          <option value="week">1 semana</option>
+          <option value="custom">Elegir días</option>
+        </select>
 
-dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600">
+        <input
+          type="number"
+          id="custom-days"
+          placeholder="Días"
+          min="1"
+          class="input-base w-24 hidden"
+        />
 
-  <option value="alta">Alta</option>
-  <option value="media" selected>Media</option>
-  <option value="baja">Baja</option>
-</select>
+        <button type="submit"
+          class="btn-primary">
+          Añadir
+        </button>
+      </form>
 
-  <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-bold transition-colors dark:bg-orange-700 dark:hover:bg-orange-500">
-  Añadir
-</button>
-</form>
+      <!-- ACCIONES GLOBALES -->
+      <div class="flex flex-wrap gap-3 mt-3">
+        <button id="complete-all" class="btn-green">Completar todas</button>
+        <button id="load-mission" class="btn-purple">Cargar misiones diarias</button>
+        <button id="clear-completed" class="btn-red">Borrar completadas</button>
+      </div>
 
-<div class="flex gap-3 mt-3">
+      <!-- BUSCADOR -->
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Buscar tareas..."
+        class="input-base w-full mt-4"
+      />
 
-<button id="complete-all"
-class="px-3 py-2 text-white rounded transition
-bg-green-500 hover:bg-green-700">
-Completar todas
-</button>
+      <!-- CONTADOR -->
+      <p id="task-counter" class="font-orbitron text-4xl font-black my-6 dark:text-orange-700 transition-colors duration-700">
+        0 tareas pendientes
+      </p>
 
-<button id="clear-completed"
-class="px-3 py-2 text-white rounded transition
-bg-red-500 hover:bg-red-700">
-Borrar completadas
-</button>
+      <!-- LISTA DE TAREAS -->
+      <div id="task-list"></div>
 
-</div>
-
-  <!-- buscador  -->
-  <input
-type="text"
-id="search-input"
-placeholder="Buscar tareas..."
-class="w-full mt-4 p-2 border rounded
-
-bg-white text-zinc-800 border-zinc-300
-
-dark:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-600"
-/>
-
-  <!-- contenedor de tareas -->
-   <p id="task-counter" class="text-4xl font-black mb-6 dark:text-orange-700
-  ">
-  0 tareas
-</p>
-  <div id="task-list"></div>
-</section>
     </main>
   </div>
+
+  <!-- ESTILOS UTILITARIOS (clases reutilizables vía @apply no disponible en CDN, se definen inline) -->
+  <style>
+.input-base {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d4d4d8;
+  background: white;
+  color: #27272a;
+  transition: 0.7s;
+}
+
+.dark .input-base {
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+}
+
+.select-base {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d4d4d8;
+  background: white;
+  color: #3f3f46;
+  transition: 0.7s;
+}
+
+.dark .select-base {
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+}
+
+.btn-primary {
+  background: #f97316;
+  color: white;
+  padding: 8px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background: #ea580c;
+}
+
+.btn-green {
+  background: #22c55e;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btn-green:hover {
+  background: #15803d;
+}
+
+.btn-purple {
+  background: #9333ea;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btn-purple:hover {
+  background: #6b21a8;
+}
+
+.btn-red {
+  background: #ef4444;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btn-red:hover {
+  background: #b91c1c;
+}
+</style>
+
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,279 +1,368 @@
-// ===== referencias DOM =====
-const form = document.getElementById("task-form");
-const input = document.getElementById("task-input");
-const priorityInput = document.getElementById("priority-input");
-const taskList = document.getElementById("task-list");
-const searchInput = document.getElementById("search-input");
-const priorityFilter = document.getElementById("priority-filter");
-const counter = document.getElementById("task-counter");
-const statusFilter = document.getElementById("status-filter");
-const completeAllBtn = document.getElementById("complete-all");
-const clearCompletedBtn = document.getElementById("clear-completed");
-const statTotal = document.getElementById("stat-total");
-const statCompleted = document.getElementById("stat-completed");
-const statPending = document.getElementById("stat-pending");
+// ── 1. REFERENCIAS DOM ──────────────────────────────────────
 
-// ===== estado =====
+const DOM = {
+  form:           document.getElementById("task-form"),
+  taskInput:      document.getElementById("task-input"),
+  priorityInput:  document.getElementById("priority-input"),
+  locationInput:  document.getElementById("location-input"),
+  deadlineType:   document.getElementById("deadline-type"),
+  customDays:     document.getElementById("custom-days"),
+  taskList:       document.getElementById("task-list"),
+  searchInput:    document.getElementById("search-input"),
+  priorityFilter: document.getElementById("priority-filter"),
+  statusFilter:   document.getElementById("status-filter"),
+  locationFilter: document.getElementById("location-filter"),
+  counter:        document.getElementById("task-counter"),
+  statTotal:      document.getElementById("stat-total"),
+  statCompleted:  document.getElementById("stat-completed"),
+  statPending:    document.getElementById("stat-pending"),
+  statExpired:    document.getElementById("stat-expired"),
+  darkToggle:     document.getElementById("dark-toggle"),
+  completeAllBtn: document.getElementById("complete-all"),
+  clearDoneBtn:   document.getElementById("clear-completed"),
+  loadMissionBtn: document.getElementById("load-mission"),
+};
+
+// ── 2. ESTADO ────────────────────────────────────────────────
+
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-// ===== guardar =====
+// ── 3. PERSISTENCIA ──────────────────────────────────────────
+
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// ===== contador =====
-function updateCounter() {
-  const pending = tasks.filter(t => !t.completed).length;
-  counter.textContent = `${pending} tareas pendientes`;
+// ── 4. UTILIDADES ────────────────────────────────────────────
+
+/** Devuelve true si la tarea ha superado su fecha límite */
+function isExpired(task) {
+  return task.deadline ? new Date(task.deadline) < new Date() : false;
 }
 
-function updateStats() {
-
-  const total = tasks.length;
-  const completed = tasks.filter(t => t.completed).length;
-  const pending = total - completed;
-
-  statTotal.textContent = total;
-  statCompleted.textContent = completed;
-  statPending.textContent = pending;
-
+/** Calcula días restantes redondeando hacia abajo (días de calendario completos) */
+function daysRemaining(task) {
+  if (!task.deadline) return null;
+  const now      = new Date();
+  const deadline = new Date(task.deadline);
+  // Comparamos solo la parte de fecha (sin hora)
+  const todayMidnight    = new Date(now.getFullYear(),      now.getMonth(),      now.getDate());
+  const deadlineMidnight = new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate());
+  return Math.round((deadlineMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
 }
 
-// ===== badge =====
-function getBadgeClass(priority) {
-  if (priority === "alta") return "badge high";
-  if (priority === "media") return "badge medium";
-  return "badge low";
+/**
+ * Calcula la fecha límite según el selector.
+ * "mañana" → medianoche del día siguiente (00:00:00 del día D+1),
+ * es decir que la tarea vence justo cuando arranca ese día.
+ *8/
+function calculateDeadline() {
+  const type = DOM.deadlineType.value;
+  const daysMap = { tomorrow: 1, week: 7 };
+  const days = daysMap[type] ?? (Number(DOM.customDays.value) || 1);
+
+  // Medianoche del día actual + N días = 00:00:00 del día objetivo
+  const deadline = new Date();
+  deadline.setHours(0, 0, 0, 0);
+  deadline.setDate(deadline.getDate() + days);
+  // NO añadimos horas → queda en 00:00:00 del día D+N
+  // La tarea vence en cuanto empieza ese día
+  return deadline.toISOString();
 }
 
 
-function sortTasks() {
+/** Fincion de 1 minuto  ariba ----------------- */
+function calculateDeadline() {
+  const type = DOM.deadlineType.value;
+  const daysMap = { tomorrow: 1, week: 7 };
+  const days = daysMap[type] ?? (Number(DOM.customDays.value) || 1);
+
+  const deadline = new Date();
+  deadline.setTime(deadline.getTime() + days * 60 * 1000); // 1 día = 1 minuto
+  return deadline.toISOString();
+}
+
+/** */
+
+
+
+
+/** Construye un deadline de medianoche para las misiones (mañana a las 00:00) *8/
+function tomorrowMidnight() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 1);
+  return d.toISOString();
+}
+/** */
+
+/** Funcion de 1 minuto  arriba ---------------------------- */
+function tomorrowMidnight() {
+  const d = new Date();
+  d.setTime(d.getTime() + 60 * 1000); // 1 minuto
+  return d.toISOString();
+}
+/* */
+
+
+/** Ordena las tareas por prioridad (alta → media → baja) */
+function sortByPriority(list) {
   const order = { alta: 0, media: 1, baja: 2 };
-  tasks.sort((a, b) => order[a.priority] - order[b.priority]);
+  return [...list].sort((a, b) => order[a.priority] - order[b.priority]);
 }
 
-function createTaskElement(task, index) {
+/** Filtra las tareas según los controles activos */
+function getFilteredTasks() {
+  const text     = DOM.searchInput.value.toLowerCase();
+  const priority = DOM.priorityFilter.value;
+  const status   = DOM.statusFilter.value;
+  const location = DOM.locationFilter.value;
 
-  const article = document.createElement("article");
+  return tasks.filter(task => {
+    const expired = isExpired(task);
 
-  article.className =
-  "p-4 mb-4 flex items-center gap-4 bg-white dark:bg-zinc-800 rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700";
+    const matchText     = task.text.toLowerCase().includes(text);
+    const matchPriority = priority === "todas" || task.priority === priority;
+    const matchLocation = location === "todas" || task.location === location;
+    const matchStatus   =
+      status === "todas"      ||
+      (status === "completadas" &&  task.completed) ||
+      (status === "pendientes"  && !task.completed && !expired) ||
+      (status === "vencidas"    &&  expired && !task.completed);
 
-  if (task.completed) article.classList.add("opacity-50");
-
-  // checkbox
-  const checkbox = document.createElement("input");
-
-  checkbox.type = "checkbox";
-  checkbox.className = "w-5 h-5 cursor-pointer";
-  checkbox.checked = task.completed;
-
-  checkbox.addEventListener("change", () => {
-
-    task.completed = checkbox.checked;
-
-    saveTasks();
-    renderTasks();
-
+    return matchText && matchPriority && matchLocation && matchStatus;
   });
+}
 
-  // titulo
-  const title = document.createElement("span");
+// ── 5. RENDERIZADO ───────────────────────────────────────────
 
-  title.className =
-  `flex-1 font-bold text-xl break-all ${task.completed ? "line-through" : ""}`;
+/** Genera el elemento <article> de una tarea */
+function createTaskElement(task, index) {
+  const expired = isExpired(task);
+  const locked  = expired && !task.completed; // vencida sin completar → bloqueada
 
-  title.textContent = task.text;
+  // Contenedor: fondo rojo si está vencida y no completada
+  const article = document.createElement("article");
+  article.className = [
+    "p-4 mb-4 flex items-start gap-3",
+    "rounded-xl shadow-md border transition-colors duration-700",
+    locked
+      ? "bg-red-100 dark:bg-red-950 border-red-400 dark:border-red-700"
+      : task.completed
+        ? "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 opacity-50"
+        : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700",
+  ].join(" ");
 
-  // prioridad
-  const badge = document.createElement("span");
-
-  let priorityClasses = "";
-
-  switch (task.priority) {
-
-    case "alta":
-      priorityClasses = "bg-red-500 text-white";
-      break;
-
-    case "media":
-      priorityClasses = "bg-yellow-500 text-white";
-      break;
-
-    case "baja":
-      priorityClasses = "bg-green-500 text-white";
-      break;
-
-  }
-
-  badge.className =
-  `${priorityClasses} px-3 py-1 rounded-full text-xs font-bold`;
-
-  badge.textContent = task.priority;
-
-  // botón editar
-  const editBtn = document.createElement("button");
-
-  editBtn.textContent = "✏️";
-
-  editBtn.className =
-  "text-xl hover:scale-110 transition";
-
-  editBtn.addEventListener("click", () => {
-
-    const inputEdit = document.createElement("input");
-
-    inputEdit.type = "text";
-    inputEdit.value = task.text;
-
-    inputEdit.className =
-    "flex-1 p-1 border rounded bg-white dark:bg-zinc-700";
-
-    title.replaceWith(inputEdit);
-
-    inputEdit.focus();
-
-    inputEdit.addEventListener("blur", saveEdit);
-
-    inputEdit.addEventListener("keydown", (e) => {
-
-      if (e.key === "Enter") saveEdit();
-
-    });
-
-    function saveEdit() {
-
-      task.text = inputEdit.value.trim() || task.text;
-
+  // Checkbox — deshabilitado si está vencida
+  const checkbox = Object.assign(document.createElement("input"), {
+    type:      "checkbox",
+    className: `w-5 h-5 mt-1 flex-shrink-0 ${locked ? "cursor-not-allowed opacity-40" : "cursor-pointer"}`,
+    checked:   task.completed,
+    disabled:  locked,
+  });
+  if (!locked) {
+    checkbox.addEventListener("change", () => {
+      task.completed = checkbox.checked;
       saveTasks();
       renderTasks();
+    });
+  }
 
+  // Cuerpo central
+  const body = document.createElement("div");
+  body.className = "flex-1 min-w-0 flex flex-col gap-1";
+
+  const title = document.createElement("span");
+  title.className = [
+    "font-bold text-base sm:text-lg break-words leading-snug",
+    task.completed ? "line-through" : "",
+    locked ? "text-red-700 dark:text-red-300" : "",
+  ].join(" ");
+  title.textContent = task.text;
+
+  // Fila de badges
+  const meta = document.createElement("div");
+  meta.className = "flex flex-wrap items-center gap-1.5 mt-1";
+
+  const priorityColors = { alta: "bg-red-500", media: "bg-yellow-500", baja: "bg-green-500" };
+  const badge = document.createElement("span");
+  badge.className = `${priorityColors[task.priority] ?? "bg-zinc-400"} text-white px-2 py-0.5 rounded-full text-xs font-bold`;
+  badge.textContent = task.priority;
+
+  const locationBadge = document.createElement("span");
+  locationBadge.className = "bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-bold";
+  locationBadge.textContent = task.location === "interior" ? "Interior" : "Exterior";
+
+  const deadlineLabel = document.createElement("span");
+  const remaining = daysRemaining(task);
+  if (remaining !== null) {
+    deadlineLabel.className = `text-xs font-bold ${locked ? "text-red-600 dark:text-red-400" : "text-purple-500"}`;
+    if (locked) {
+      deadlineLabel.textContent = "⛔ Vencida";
+    } else if (remaining === 0) {
+      deadlineLabel.textContent = "⏱ Vence hoy";
+    } else {
+      deadlineLabel.textContent = `⏱ ${remaining} día${remaining !== 1 ? "s" : ""}`;
     }
+  }
 
-  });
+  meta.append(badge, locationBadge, deadlineLabel);
+  body.append(title, meta);
 
-  // botón borrar
+  // Botones — editar bloqueado si vencida
+  const actions = document.createElement("div");
+  actions.className = "flex flex-col items-center gap-1 flex-shrink-0";
+
+  if (!locked) {
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.className = "text-lg hover:scale-110 transition";
+    editBtn.addEventListener("click", () => startInlineEdit(task, title));
+    actions.append(editBtn);
+  }
+
   const deleteBtn = document.createElement("button");
-
   deleteBtn.textContent = "🗑";
-
-  deleteBtn.className =
-  "text-xl hover:scale-110 transition";
-
+  deleteBtn.className = "text-lg hover:scale-110 transition";
   deleteBtn.addEventListener("click", () => {
-
     tasks.splice(index, 1);
-
     saveTasks();
     renderTasks();
-
   });
 
-  article.append(
-    checkbox,
-    title,
-    badge,
-    editBtn,
-    deleteBtn
-  );
-
+  actions.append(deleteBtn);
+  article.append(checkbox, body, actions);
   return article;
 }
 
-function renderTasks() {
-  const textFilter = searchInput.value || "";
-  const prioFilter = priorityFilter?.value || "todas";
+/** Convierte el título de una tarea en un <input> editable in-place */
+function startInlineEdit(task, titleEl) {
+  const input = Object.assign(document.createElement("input"), {
+    type:      "text",
+    value:     task.text,
+    className: "flex-1 p-1 border rounded bg-white dark:bg-zinc-700 transition-colors duration-700",
+  });
 
-  taskList.innerHTML = "";
+  const commit = () => {
+    const newText = input.value.trim();
+    if (newText) task.text = newText;
+    saveTasks();
+    renderTasks();
+  };
 
-  sortTasks();
-
-tasks.forEach((task, index) => {
-  const matchText = (task.text || "").toLowerCase().includes(textFilter.toLowerCase());
-
-  const matchPriority =
-    prioFilter === "todas" || task.priority === prioFilter;
-
-  
-  const matchStatus =
-    statusFilter.value === "todas" ||
-    (statusFilter.value === "completadas" && task.completed) ||
-    (statusFilter.value === "pendientes" && !task.completed);
-
-  if (!matchText || !matchPriority || !matchStatus) return;
-
-  taskList.appendChild(createTaskElement(task, index));
-});
-
-  updateCounter();
-updateStats();
-  
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", e => e.key === "Enter" && commit());
+  titleEl.replaceWith(input);
+  input.focus();
 }
 
+/** Actualiza el contador y las estadísticas */
+function updateStats() {
+  const total     = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  const expired   = tasks.filter(t => isExpired(t) && !t.completed).length;
+  const pending   = total - completed;
 
-form.addEventListener("submit", (e) => {
+  DOM.counter.textContent       = `${pending} tareas pendientes`;
+  DOM.statTotal.textContent     = total;
+  DOM.statCompleted.textContent = completed;
+  DOM.statPending.textContent   = pending;
+  DOM.statExpired.textContent   = expired;
+}
+
+/** Renderiza la lista completa según los filtros activos */
+function renderTasks() {
+  DOM.taskList.innerHTML = "";
+
+  const visible = sortByPriority(getFilteredTasks());
+
+  visible.forEach(task => {
+    const index = tasks.indexOf(task);
+    DOM.taskList.appendChild(createTaskElement(task, index));
+  });
+
+  updateStats();
+}
+
+// ── 6. EVENTOS ───────────────────────────────────────────────
+
+// — Tema oscuro —
+function initTheme() {
+  if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.classList.add("dark");
+    DOM.darkToggle.textContent = "🌙";
+  }
+}
+
+DOM.darkToggle.addEventListener("click", () => {
+  const isDark = document.documentElement.classList.toggle("dark");
+  DOM.darkToggle.textContent = isDark ? "🌙" : "☀️";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+
+// — Mostrar/ocultar input de días personalizados —
+DOM.deadlineType.addEventListener("change", () => {
+  DOM.customDays.classList.toggle("hidden", DOM.deadlineType.value !== "custom");
+});
+
+// — Añadir tarea —
+DOM.form.addEventListener("submit", e => {
   e.preventDefault();
-
-  const text = input.value.trim();
+  const text = DOM.taskInput.value.trim();
   if (!text) return;
 
   tasks.push({
     text,
-    priority: priorityInput.value,
+    priority:  DOM.priorityInput.value,
+    location:  DOM.locationInput.value,
     completed: false,
+    deadline:  calculateDeadline(),
   });
 
   saveTasks();
   renderTasks();
-  input.value = "";
+  DOM.taskInput.value = "";
 });
 
-// ===== filtros =====
-searchInput.addEventListener("input", renderTasks);
-priorityFilter?.addEventListener("change", renderTasks);
-statusFilter?.addEventListener("change", renderTasks);
-// ===== init =====
+// — Filtros y buscador —
+DOM.priorityFilter.addEventListener("change", renderTasks);
+DOM.statusFilter.addEventListener("change", renderTasks);
+DOM.locationFilter.addEventListener("change", renderTasks);
+DOM.searchInput.addEventListener("input", renderTasks);
+
+// — Completar todas (omite las vencidas) —
+DOM.completeAllBtn.addEventListener("click", () => {
+  tasks.forEach(t => {
+    if (!isExpired(t)) t.completed = true;
+  });
+  saveTasks();
+  renderTasks();
+});
+
+// — Borrar completadas —
+DOM.clearDoneBtn.addEventListener("click", () => {
+  tasks = tasks.filter(t => !t.completed);
+  saveTasks();
+  renderTasks();
+});
+
+// — Cargar misiones diarias —
+DOM.loadMissionBtn.addEventListener("click", () => {
+  const deadline = tomorrowMidnight();
+
+  const missions = [
+    { text: "Revisar niveles de oxígeno",           priority: "alta",  location: "interior" },
+    { text: "Inspeccionar paneles solares",          priority: "baja",  location: "exterior" },
+    { text: "Analizar muestras del suelo marciano",  priority: "media", location: "exterior" },
+    { text: "Actualizar sistema de navegación",      priority: "media", location: "interior" },
+    { text: "Verificar comunicaciones con Tierra",   priority: "alta",  location: "interior" },
+  ].map(m => ({ ...m, completed: false, deadline }));
+
+  tasks.push(...missions);
+  saveTasks();
+  renderTasks();
+});
+
+// ── INIT ─────────────────────────────────────────────────────
+initTheme();
 renderTasks();
-updateCounter();
-
-
-const toggleBtn = document.getElementById("dark-toggle");
-const root = document.documentElement;
-
-// comprobar si ya estaba activado antes
-if (localStorage.getItem("theme") === "dark") {
-  root.classList.add("dark");
-  toggleBtn.textContent = "🌙";
-}
-
-toggleBtn.addEventListener("click", () => {
-  root.classList.toggle("dark");
-
-  if (root.classList.contains("dark")) {
-    toggleBtn.textContent = "🌙";
-    localStorage.setItem("theme", "dark");
-  } else {
-    toggleBtn.textContent = "☀️";
-    localStorage.setItem("theme", "light");
-  }
-});
-
-
-//Completar todas
-completeAllBtn.addEventListener("click", () => {
-  tasks.forEach(task => {
-    task.completed = true;
-  });
-
-  saveTasks();
-  renderTasks();
-});
-
-//Borrar completadas
-
-clearCompletedBtn.addEventListener("click", () => {
-  tasks = tasks.filter(task => !task.completed);
-
-  saveTasks();
-  renderTasks();
-});
