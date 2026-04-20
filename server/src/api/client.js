@@ -4,7 +4,9 @@
 // módulo. El resto del frontend no sabe nada de fetch ni URLs.
 // ═══════════════════════════════════════════════════════════════
 
-const API_BASE = "http://localhost:3000/api/v1/tasks";
+const API_BASE = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api/v1/tasks"
+  : "https://taskflow-api-brown.vercel.app/";
 
 /**
  * Wrapper interno que centraliza el manejo de errores HTTP.

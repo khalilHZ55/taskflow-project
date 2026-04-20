@@ -6,7 +6,13 @@ const taskRoutes = require("./routes/task.routes");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "https://taskflow-project-taupe.vercel.app/",  // ← dominio de tu frontend en Vercel
+  ]
+}));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
