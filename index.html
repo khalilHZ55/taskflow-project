@@ -23,14 +23,12 @@
 
 <body class="min-h-screen bg-orange-200 text-black dark:bg-zinc-900 dark:text-zinc-200 font-exo">
 
-  <!-- HEADER -->
   <header class="bg-orange-500 dark:bg-orange-700 text-white p-5 flex justify-between items-center transition-colors duration-700">
     <h1 class="font-orbitron text-4xl">Project Mars</h1>
   </header>
 
   <div class="flex flex-col md:flex-row min-h-screen">
 
-    <!-- SIDEBAR -->
     <aside class="w-full md:w-64 p-6 bg-orange-100 dark:bg-zinc-800 border-b md:border-b-0 md:border-r border-zinc-300 dark:border-zinc-700 transition-colors duration-700">
 
       <button id="dark-toggle"
@@ -38,9 +36,7 @@
         ☀️
       </button>
 
-      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">
-        Filtros
-      </h2>
+      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">Filtros</h2>
 
       <select id="priority-filter" class="select-base w-full">
         <option value="todas">Todas las prioridades</option>
@@ -62,10 +58,15 @@
         <option value="exterior">Exterior</option>
       </select>
 
-      <h2 class="font-orbitron text-3xl font-black mt-10 mb-4 dark:text-orange-700 transition-colors duration-700">
-        Estadísticas
-      </h2>
+      <h2 class="font-orbitron text-xl font-black mt-10 mb-3 dark:text-orange-700 transition-colors duration-700">Velocidad</h2>
+      <select id="speed-mode" class="select-base w-full">
+        <option value="real">🕐 Tiempo real</option>
+        <option value="fast">⚡ Rápido (1 día = 1 min)</option>
+        <option value="turbo">🚀 Turbo (1 día = 10 s)</option>
+      </select>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Afecta a tareas y misiones nuevas.</p>
 
+      <h2 class="font-orbitron text-3xl font-black mt-10 mb-4 dark:text-orange-700 transition-colors duration-700">Estadísticas</h2>
       <div class="space-y-2 text-lg">
         <p>Total: <span id="stat-total" class="font-bold">0</span></p>
         <p>Completadas: <span id="stat-completed" class="font-bold text-green-500">0</span></p>
@@ -75,158 +76,71 @@
 
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 p-6 bg-orange-300 dark:bg-zinc-900 transition-colors duration-700">
 
-      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">
-        Mis tareas
-      </h2>
+      <h2 class="font-orbitron text-4xl font-black mb-6 dark:text-orange-700 transition-colors duration-700">Mis tareas</h2>
 
-      <!-- FORMULARIO -->
       <form id="task-form" class="flex flex-wrap gap-2 items-center">
-        <input
-          type="text"
-          id="task-input"
-          placeholder="Nueva tarea..."
-          required
-          class="input-base flex-1 min-w-[200px]"
-        />
-
+        <input type="text" id="task-input" placeholder="Nueva tarea..." required class="input-base flex-1 min-w-[200px]" />
         <select id="priority-input" class="select-base">
           <option value="alta">Alta</option>
           <option value="media" selected>Media</option>
           <option value="baja">Baja</option>
         </select>
-
         <select id="location-input" class="select-base">
           <option value="interior">Interior</option>
           <option value="exterior">Exterior</option>
         </select>
-
         <select id="deadline-type" class="select-base">
           <option value="tomorrow">Mañana</option>
           <option value="week">1 semana</option>
           <option value="custom">Elegir días</option>
         </select>
-
-        <input
-          type="number"
-          id="custom-days"
-          placeholder="Días"
-          min="1"
-          class="input-base w-24 hidden"
-        />
-
-        <button type="submit"
-          class="btn-primary">
-          Añadir
-        </button>
+        <input type="number" id="custom-days" placeholder="Días" min="1" class="input-base w-24 hidden" />
+        <button type="submit" class="btn-primary">Añadir</button>
       </form>
 
-      <!-- ACCIONES GLOBALES -->
       <div class="flex flex-wrap gap-3 mt-3">
-        <button id="complete-all" class="btn-green">Completar todas</button>
-        <button id="load-mission" class="btn-purple">Cargar misiones diarias</button>
+        <button id="complete-all"    class="btn-green">Completar todas</button>
+        <button id="load-mission"    class="btn-purple">Cargar misiones diarias</button>
         <button id="clear-completed" class="btn-red">Borrar completadas</button>
       </div>
 
-      <!-- BUSCADOR -->
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Buscar tareas..."
-        class="input-base w-full mt-4"
-      />
+      <input type="text" id="search-input" placeholder="Buscar tareas..." class="input-base w-full mt-4" />
 
-      <!-- CONTADOR -->
-      <p id="task-counter" class="font-orbitron text-4xl font-black my-6 dark:text-orange-700 transition-colors duration-700">
-        0 tareas pendientes
-      </p>
+      <p id="task-counter" class="font-orbitron text-4xl font-black my-6 dark:text-orange-700 transition-colors duration-700">0 tareas pendientes</p>
 
-      <!-- LISTA DE TAREAS -->
       <div id="task-list"></div>
 
     </main>
   </div>
 
-  <!-- ESTILOS UTILITARIOS (clases reutilizables vía @apply no disponible en CDN, se definen inline) -->
   <style>
-.input-base {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #d4d4d8;
-  background: white;
-  color: #27272a;
-  transition: 0.7s;
-}
+.input-base { padding:8px; border-radius:6px; border:1px solid #d4d4d8; background:white; color:#27272a; transition:0.7s; }
+.dark .input-base { background:#3f3f46; color:#e4e4e7; border:1px solid #52525b; }
+.select-base { padding:8px; border-radius:6px; border:1px solid #d4d4d8; background:white; color:#3f3f46; transition:0.7s; }
+.dark .select-base { background:#3f3f46; color:#e4e4e7; border:1px solid #52525b; }
+.btn-primary { background:#f97316; color:white; padding:8px 24px; border-radius:12px; font-weight:bold; }
+.btn-primary:hover { background:#ea580c; }
+.btn-green { background:#22c55e; color:white; padding:8px 12px; border-radius:6px; }
+.btn-green:hover { background:#15803d; }
+.btn-purple { background:#9333ea; color:white; padding:8px 12px; border-radius:6px; }
+.btn-purple:hover { background:#6b21a8; }
+.btn-red { background:#ef4444; color:white; padding:8px 12px; border-radius:6px; }
+.btn-red:hover { background:#b91c1c; }
 
-.dark .input-base {
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
+@keyframes blinkSoftRed {
+  0%, 100% { background-color: rgba(254, 202, 202, 0.25); border-color: rgba(248, 113, 113, 0.65); }
+  50%      { background-color: rgba(254, 202, 202, 0.60); border-color: rgba(248, 113, 113, 0.95); }
 }
-
-.select-base {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #d4d4d8;
-  background: white;
-  color: #3f3f46;
-  transition: 0.7s;
+.blink-expiring {
+  animation: blinkSoftRed 1s ease-in-out infinite;
 }
-
-.dark .select-base {
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
+.dark .blink-expiring {
+  animation: blinkSoftRed 1s ease-in-out infinite;
 }
+  </style>
 
-.btn-primary {
-  background: #f97316;
-  color: white;
-  padding: 8px 24px;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.btn-primary:hover {
-  background: #ea580c;
-}
-
-.btn-green {
-  background: #22c55e;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.btn-green:hover {
-  background: #15803d;
-}
-
-.btn-purple {
-  background: #9333ea;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.btn-purple:hover {
-  background: #6b21a8;
-}
-
-.btn-red {
-  background: #ef4444;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.btn-red:hover {
-  background: #b91c1c;
-}
-</style>
-
-  <script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>

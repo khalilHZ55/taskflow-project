@@ -67,8 +67,7 @@ console.log("El total con descuento es: " + calcularTotal(carrito));
     - Error de Atributo (Potencial): Si el bucle llega al índice fuera de rango (el punto 2), intentará leer item.precio sobre algo que es undefined, rompiendo el programa.
 
 
-- El código de Chat GPT y Claude AI solucionan los problemas de la misma manera, tardando lo mismo y sus explicaciones son prácticamente iguales, sin embargo la intención del código es aplicar un descuento general del 10% a todas las compras y un descuento del 20% si la compra supera 100€, con el código proporcionado aunque lo arreglen solo se puede aplicar el descuento del 20%
-pero Claude AI se ha dado cuenta de eso y sacó    total = total - (total * descuento);       fuera del        if (total > 100) {}     haciendo que el descuento del 10% se pueda aplicar, yo en ningún momento les indique la intención del código.
+- El código de Chat GPT y Claude AI solucionan los problemas de la misma manera, tardando lo mismo y sus explicaciones son prácticamente iguales, sin embargo la intención del código es aplicar un descuento general del 10% a todas las compras y un descuento del 20% si la compra supera 100€, con el código proporcionado aunque lo arreglen solo se puede aplicar el descuento del 20% pero Claude AI se ha dado cuenta de eso y sacó    total = total - (total * descuento);      fuera del        if (total > 100) {}     haciendo que el descuento del 10% se pueda aplicar, yo en ningún momento les indique la intención del código.
 
 
 
@@ -99,3 +98,38 @@ Por favor, explica para qué sirve cada función como si se lo explicaras a algu
 
             - Mientras Chat GPT se ciñe a lo que se le pide (Perfecto si sabes lo que haces), Claude AI intenta abarcar un poco más entendindo el contexto y usando métodos más profesionales.
 
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CONECTAR SERVIDORES MCP
+
+MCP permite conectar la IA del editor con recursos externos como archivos del proyecto, repositorios y APIs.
+
+
+Instalación paso a paso
+
+Abrí Cursor Settings
+Accedí a MCP Settings
+Añadí servidor filesystem
+Reinicié Cursor
+Probé acceso al proyecto desde el chat
+
+
+
+
+Le pedi hacer estas funciones:
+  Analiza la estructura del proyecto Project Mars
+  Busca funciones relacionadas con localStorage
+  Explica cómo funciona el sistema de filtros en mi app
+  Encuentra código duplicado en el proyecto
+  Sugiere mejoras en la arquitectura del código
+
+
+La IA cumplió satisfactoriamente todas mis peticiones, de dio ejemplos del propio código y las explicaciones fueron detalladas, aunque diria que claude AI tiene mejor comprensión del código.
+
+La facilidad de cursor para ser usado en cualquier proyecto es enorme, puede buscar, mejorar y crear código solo con el prompt sin necesidad de copiar y pegar el script, el se encarga de todo eso y más, una gran herramienta.
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
