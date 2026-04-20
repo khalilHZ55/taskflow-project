@@ -6,7 +6,7 @@
 
 const API_BASE = window.location.hostname === "localhost"
   ? "http://localhost:3000/api/v1/tasks"
-  : "https://taskflow-api-brown.vercel.app/";
+  : "https://taskflow-api-brown.vercel.app/api/v1/tasks";
 
 /**
  * Wrapper interno que centraliza el manejo de errores HTTP.
